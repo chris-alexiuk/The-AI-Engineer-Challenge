@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import '../styles/askjeeves.css';
 
 export default function Home() {
   const [userMessage, setUserMessage] = useState('');
@@ -46,24 +47,25 @@ export default function Home() {
   };
 
   return (
-    <main style={{ fontFamily: 'sans-serif', maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
-      <h1>Vibe Chat</h1>
-      <div style={{ marginBottom: '1rem' }}>
-        {messages.map((msg, idx) => (
-          <p key={idx}><strong>{msg.role}:</strong> {msg.content}</p>
-        ))}
-      </div>
-      <input
-        type="text"
-        value={userMessage}
-        onChange={(e) => setUserMessage(e.target.value)}
-        placeholder="Ask something..."
-        style={{ width: '100%', padding: '0.5rem' }}
-      />
-      <button onClick={sendMessage} disabled={loading} style={{ marginTop: '0.5rem' }}>
-        {loading ? 'Sending...' : 'Send'}
-      </button>
-    </main>
+    <>
+      <header>Ask Jeeves Chat</header>
+      <main>
+        <div style={{ marginBottom: '1rem' }}>
+          {messages.map((msg, idx) => (
+            <p key={idx}><strong>{msg.role}:</strong> {msg.content}</p>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={userMessage}
+          onChange={(e) => setUserMessage(e.target.value)}
+          placeholder="Ask Jeeves..."
+        />
+        <button onClick={sendMessage} disabled={loading}>
+          {loading ? 'Sending...' : 'Ask'}
+        </button>
+      </main>
+    </>
   );
 }
 
