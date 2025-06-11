@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <>
-      <header>Ask Jeeves Chat</header>
+      <header>Matrix Chat</header>
       <main>
         <input
           type="password"
@@ -65,10 +65,10 @@ export default function Home() {
           type="text"
           value={userMessage}
           onChange={(e) => setUserMessage(e.target.value)}
-          placeholder="Ask Jeeves..."
+          placeholder="Ask the Matrix..."
         />
         <button onClick={sendMessage} disabled={loading}>
-          {loading ? 'Sending...' : 'Ask'}
+          {loading ? 'Sending...' : 'Send'}
         </button>
       </main>
     </>
