@@ -5,6 +5,7 @@ export default function Home() {
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   const sendMessage = async () => {
     if (!userMessage) return;
@@ -22,7 +23,7 @@ export default function Home() {
         developer_message: 'You are a helpful assistant.',
         user_message: userMessage,
         model: 'gpt-4.1-mini',
-        api_key: process.env.NEXT_PUBLIC_OPENAI_API_KEY
+        api_key: apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY
       })
     });
 
@@ -50,6 +51,12 @@ export default function Home() {
     <>
       <header>Ask Jeeves Chat</header>
       <main>
+        <input
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="OpenAI API Key"
+        />
         <div style={{ marginBottom: '1rem' }}>
           {messages.map((msg, idx) => (
             <p key={idx}><strong>{msg.role}:</strong> {msg.content}</p>
@@ -68,4 +75,3 @@ export default function Home() {
     </>
   );
 }
-
