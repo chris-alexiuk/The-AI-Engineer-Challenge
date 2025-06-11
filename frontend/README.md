@@ -9,9 +9,9 @@ Welcome to the shiny frontend for your AI Engineer Challenge! This app is built 
    cd frontend
    npm install
    ```
-2. **Add your OpenAI key**
-   - Copy `.env.local.example` to `.env.local` and replace the placeholder with your real API key.
-   - The same file can also define `NEXT_PUBLIC_BACKEND_URL` if your FastAPI backend is running somewhere other than `localhost:8000`.
+2. **Configure environment (optional)**
+   - Copy `.env.local.example` to `.env.local` if you need to change `NEXT_PUBLIC_BACKEND_URL`.
+   - The app now lets users provide their own OpenAI API key directly in the interface, so you don't need to store it in this file.
 3. **Run the dev server**
    ```bash
    npm run dev

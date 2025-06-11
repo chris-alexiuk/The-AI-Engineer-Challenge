@@ -4,6 +4,7 @@ export default function Home() {
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   const sendMessage = async () => {
     if (!userMessage) return;
@@ -21,7 +22,7 @@ export default function Home() {
         developer_message: 'You are a helpful assistant.',
         user_message: userMessage,
         model: 'gpt-4.1-mini',
-        api_key: process.env.NEXT_PUBLIC_OPENAI_API_KEY
+        api_key: apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY
       })
     });
 
@@ -48,6 +49,13 @@ export default function Home() {
   return (
     <main style={{ fontFamily: 'sans-serif', maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
       <h1>Vibe Chat</h1>
+      <input
+        type="password"
+        value={apiKey}
+        onChange={(e) => setApiKey(e.target.value)}
+        placeholder="OpenAI API Key"
+        style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
+      />
       <div style={{ marginBottom: '1rem' }}>
         {messages.map((msg, idx) => (
           <p key={idx}><strong>{msg.role}:</strong> {msg.content}</p>
