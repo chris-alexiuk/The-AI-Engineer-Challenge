@@ -26,5 +26,5 @@ This directory works with the provided `vercel.json` file. Once everything looks
 vercel --prod
 ```
 
-Happy vibe‑coding! 🎉
+Happy vibe‑coding! 🎉 The interface now sports a nostalgic Ask Jeeves theme for extra retro flair.
 
