@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '../styles/askjeeves.css';
 
 export default function Home() {
   const [userMessage, setUserMessage] = useState('');
