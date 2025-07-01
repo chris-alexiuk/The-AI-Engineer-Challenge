@@ -11,6 +11,58 @@ export default function Home() {
   const [uploadingPDF, setUploadingPDF] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Matrix digital rain effect
+  useEffect(() => {
+    const canvas = document.getElementById('matrix-bg');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const charArray = chars.split('');
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1;
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#0f0';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    const interval = setInterval(draw, 35);
+    
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   // Load documents on component mount
   useEffect(() => {
     loadDocuments();
@@ -139,229 +191,360 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <header style={{ marginBottom: '30px', textAlign: 'center' }}>
-        <h1 style={{ color: '#333', marginBottom: '10px' }}>PDF RAG Chat System</h1>
-        <p style={{ color: '#666' }}>Upload PDFs and chat with your documents using AI</p>
-      </header>
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Courier Prime', monospace;
+          background: #000;
+          color: #00ff00;
+          overflow-x: hidden;
+        }
+        
+        #matrix-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: -1;
+          opacity: 0.1;
+        }
+        
+        .glow {
+          text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00;
+        }
+        
+        .matrix-border {
+          border: 1px solid #00ff00;
+          box-shadow: 
+            0 0 5px rgba(0, 255, 0, 0.3),
+            inset 0 0 5px rgba(0, 255, 0, 0.1);
+        }
+        
+        .glitch {
+          animation: glitch 0.3s linear infinite;
+        }
+        
+        @keyframes glitch {
+          0% { transform: translate(0); }
+          20% { transform: translate(-1px, 1px); }
+          40% { transform: translate(-1px, -1px); }
+          60% { transform: translate(1px, 1px); }
+          80% { transform: translate(1px, -1px); }
+          100% { transform: translate(0); }
+        }
+        
+        .typing-effect {
+          border-right: 2px solid #00ff00;
+          animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+          0%, 50% { border-color: #00ff00; }
+          51%, 100% { border-color: transparent; }
+        }
+        
+        .pulse {
+          animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+          0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+          50% { box-shadow: 0 0 25px rgba(0, 255, 0, 0.6); }
+          100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+        }
+        
+        .matrix-button {
+          background: linear-gradient(45deg, #000, #003300);
+          border: 1px solid #00ff00;
+          color: #00ff00;
+          padding: 12px 24px;
+          font-family: 'Orbitron', monospace;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        
+        .matrix-button:hover {
+          background: linear-gradient(45deg, #003300, #006600);
+          box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+          transform: translateY(-2px);
+        }
+        
+        .matrix-button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+        
+        .matrix-input {
+          background: rgba(0, 0, 0, 0.8);
+          border: 1px solid #00ff00;
+          color: #00ff00;
+          padding: 12px;
+          font-family: 'Courier Prime', monospace;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        
+        .matrix-input:focus {
+          outline: none;
+          box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+          background: rgba(0, 50, 0, 0.2);
+        }
+        
+        .matrix-input::placeholder {
+          color: rgba(0, 255, 0, 0.5);
+        }
+        
+        .scan-line {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .scan-line::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+          animation: scan 3s infinite;
+        }
+        
+        @keyframes scan {
+          0% { left: -100%; }
+          100% { left: 100%; }
+        }
+      `}</style>
+      
+      <canvas id="matrix-bg"></canvas>
+      
+      <div className="min-h-screen p-4 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <header className="text-center mb-8 scan-line">
+            <h1 className="text-6xl font-bold mb-4 glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+              THE MATRIX
+            </h1>
+            <h2 className="text-2xl mb-2 glitch" style={{ fontFamily: 'Orbitron, monospace' }}>
+              PDF NEURAL INTERFACE
+            </h2>
+                         <p className="text-green-400 text-lg">
+               {'>'} UPLOAD DOCUMENTS TO THE MAINFRAME_
+             </p>
+            <div className="mt-4 h-px bg-gradient-to-r from-transparent via-green-500 to-transparent"></div>
+          </header>
 
-      <main>
-        {/* API Key Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-            OpenAI API Key:
-          </label>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="Enter your OpenAI API Key"
-            style={{
-              width: '100%',
-              padding: '10px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '16px'
-            }}
-          />
-        </div>
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Left Panel - Controls */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* API Key */}
+              <div className="matrix-border p-6 bg-black bg-opacity-50 backdrop-blur-sm pulse">
+                <h3 className="text-xl font-bold mb-4 glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+                  SECURITY ACCESS
+                </h3>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="ENTER ACCESS CODE..."
+                  className="matrix-input w-full"
+                />
+              </div>
 
-        {/* PDF Upload Section */}
-        <div style={{ 
-          marginBottom: '20px', 
-          padding: '20px', 
-          border: '2px dashed #ddd', 
-          borderRadius: '8px',
-          backgroundColor: '#f9f9f9'
-        }}>
-          <h3 style={{ marginTop: '0', marginBottom: '15px' }}>Upload PDF Document</h3>
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileSelect}
-              style={{ marginBottom: '10px' }}
-            />
-            {selectedFile && (
-              <p style={{ margin: '5px 0', color: '#666' }}>
-                Selected: {selectedFile.name}
-              </p>
-            )}
-          </div>
-          <button
-            onClick={uploadPDF}
-            disabled={uploadingPDF || !selectedFile || !apiKey}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: uploadingPDF ? '#ccc' : '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: uploadingPDF ? 'not-allowed' : 'pointer',
-              fontSize: '16px'
-            }}
-          >
-            {uploadingPDF ? 'Uploading...' : 'Upload PDF'}
-          </button>
-        </div>
-
-        {/* Chat Mode Selection */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-            Chat Mode:
-          </label>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-            <label style={{ display: 'flex', alignItems: 'center' }}>
-              <input
-                type="radio"
-                value="normal"
-                checked={chatMode === 'normal'}
-                onChange={(e) => setChatMode(e.target.value)}
-                style={{ marginRight: '5px' }}
-              />
-              Normal Chat
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center' }}>
-              <input
-                type="radio"
-                value="rag"
-                checked={chatMode === 'rag'}
-                onChange={(e) => setChatMode(e.target.value)}
-                style={{ marginRight: '5px' }}
-              />
-              Document Chat (RAG)
-            </label>
-          </div>
-
-          {/* Document Selection (only show in RAG mode) */}
-          {chatMode === 'rag' && (
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Select Document:
-              </label>
-              <select
-                value={selectedDocument}
-                onChange={(e) => setSelectedDocument(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '16px'
-                }}
-              >
-                <option value="">Select a document...</option>
-                {documents.map((doc) => (
-                  <option key={doc.id} value={doc.id}>
-                    {doc.id} ({doc.chunks_count} chunks)
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* Chat Messages */}
-        <div style={{ 
-          marginBottom: '20px', 
-          border: '1px solid #ddd', 
-          borderRadius: '8px',
-          height: '400px',
-          overflowY: 'auto',
-          padding: '15px',
-          backgroundColor: '#f8f9fa'
-        }}>
-          {messages.length === 0 ? (
-            <p style={{ color: '#666', textAlign: 'center', marginTop: '50px' }}>
-              {chatMode === 'rag' ? 
-                'Select a document and start chatting about it!' : 
-                'Start a conversation!'
-              }
-            </p>
-          ) : (
-            messages.map((msg, idx) => (
-              <div key={idx} style={{ 
-                marginBottom: '15px', 
-                padding: '10px',
-                backgroundColor: msg.role === 'user' ? '#e3f2fd' : '#f5f5f5',
-                borderRadius: '8px',
-                borderLeft: `4px solid ${msg.role === 'user' ? '#2196f3' : '#4caf50'}`
-              }}>
-                <strong style={{ 
-                  color: msg.role === 'user' ? '#1976d2' : '#388e3c',
-                  textTransform: 'capitalize'
-                }}>
-                  {msg.role}:
-                </strong>
-                <div style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>
-                  {msg.content}
+              {/* PDF Upload */}
+              <div className="matrix-border p-6 bg-black bg-opacity-50 backdrop-blur-sm">
+                <h3 className="text-xl font-bold mb-4 glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+                  DATA INJECTION
+                </h3>
+                <div className="space-y-4">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileSelect}
+                    className="matrix-input w-full file:matrix-button file:border-0 file:mr-4"
+                  />
+                  {selectedFile && (
+                    <div className="text-green-400 text-sm typing-effect">
+                      {'>'} {selectedFile.name}
+                    </div>
+                  )}
+                  <button
+                    onClick={uploadPDF}
+                    disabled={uploadingPDF || !selectedFile || !apiKey}
+                    className="matrix-button w-full"
+                  >
+                    {uploadingPDF ? 'UPLOADING...' : 'INJECT DATA'}
+                  </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
 
-        {/* Message Input */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-          <input
-            type="text"
-            value={userMessage}
-            onChange={(e) => setUserMessage(e.target.value)}
-            placeholder={chatMode === 'rag' ? 
-              'Ask a question about the selected document...' : 
-              'Type your message...'
-            }
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            style={{
-              flex: 1,
-              padding: '12px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '16px'
-            }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={loading || !userMessage || (chatMode === 'rag' && !selectedDocument)}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: loading ? '#ccc' : '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontSize: '16px'
-            }}
-          >
-            {loading ? 'Sending...' : 'Send'}
-          </button>
-          <button
-            onClick={clearChat}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}
-          >
-            Clear
-          </button>
-        </div>
+              {/* Mode Selection */}
+              <div className="matrix-border p-6 bg-black bg-opacity-50 backdrop-blur-sm">
+                <h3 className="text-xl font-bold mb-4 glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+                  INTERFACE MODE
+                </h3>
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      value="normal"
+                      checked={chatMode === 'normal'}
+                      onChange={(e) => setChatMode(e.target.value)}
+                      className="w-4 h-4 accent-green-500"
+                    />
+                    <span>STANDARD NEURAL LINK</span>
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      value="rag"
+                      checked={chatMode === 'rag'}
+                      onChange={(e) => setChatMode(e.target.value)}
+                      className="w-4 h-4 accent-green-500"
+                    />
+                    <span>DOCUMENT MATRIX</span>
+                  </label>
+                </div>
 
-        {/* Status Information */}
-        <div style={{ fontSize: '14px', color: '#666' }}>
-          <p>
-            Mode: <strong>{chatMode === 'rag' ? 'Document Chat' : 'Normal Chat'}</strong>
-            {chatMode === 'rag' && selectedDocument && (
-              <span> | Document: <strong>{selectedDocument}</strong></span>
-            )}
-          </p>
-          <p>Documents available: {documents.length}</p>
+                {chatMode === 'rag' && (
+                  <div className="mt-4">
+                    <select
+                      value={selectedDocument}
+                      onChange={(e) => setSelectedDocument(e.target.value)}
+                      className="matrix-input w-full"
+                    >
+                      <option value="">SELECT DATA NODE...</option>
+                      {documents.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.id.substring(0, 20)}... ({doc.chunks_count} CHUNKS)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* System Status */}
+              <div className="matrix-border p-6 bg-black bg-opacity-50 backdrop-blur-sm">
+                <h3 className="text-xl font-bold mb-4 glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+                  SYSTEM STATUS
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>MODE:</span>
+                    <span className="text-green-400">
+                      {chatMode === 'rag' ? 'DOCUMENT MATRIX' : 'NEURAL LINK'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>NODES:</span>
+                    <span className="text-green-400">{documents.length}</span>
+                  </div>
+                  {chatMode === 'rag' && selectedDocument && (
+                    <div className="flex justify-between">
+                      <span>ACTIVE:</span>
+                      <span className="text-green-400 truncate ml-2">
+                        {selectedDocument.substring(0, 15)}...
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Panel - Chat Interface */}
+            <div className="lg:col-span-2">
+              <div className="matrix-border h-full bg-black bg-opacity-50 backdrop-blur-sm">
+                {/* Chat Header */}
+                <div className="p-4 border-b border-green-500">
+                  <h3 className="text-xl font-bold glow" style={{ fontFamily: 'Orbitron, monospace' }}>
+                    NEURAL INTERFACE TERMINAL
+                  </h3>
+                                     <div className="text-green-400 text-sm">
+                     {'>'} {chatMode === 'rag' ? 'DOCUMENT MATRIX ACTIVE' : 'STANDARD LINK ESTABLISHED'}_
+                   </div>
+                </div>
+
+                {/* Messages */}
+                <div className="h-96 overflow-y-auto p-4 space-y-4" style={{ maxHeight: '500px' }}>
+                  {messages.length === 0 ? (
+                    <div className="text-center text-green-400 mt-20">
+                      <div className="text-6xl mb-4">●</div>
+                      <div className="typing-effect">
+                        {chatMode === 'rag' ? 
+                          'AWAITING DOCUMENT QUERY...' : 
+                          'NEURAL LINK READY...'
+                        }
+                      </div>
+                    </div>
+                  ) : (
+                    messages.map((msg, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-4 rounded ${
+                          msg.role === 'user'
+                            ? 'bg-green-900 bg-opacity-30 border-l-4 border-green-500 ml-8'
+                            : 'bg-black bg-opacity-30 border-l-4 border-green-400 mr-8'
+                        }`}
+                      >
+                        <div className="font-bold mb-2" style={{ fontFamily: 'Orbitron, monospace' }}>
+                          {msg.role === 'user' ? '▶ USER:' : '▶ MATRIX:'}
+                        </div>
+                        <div className="whitespace-pre-wrap leading-relaxed">
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Input */}
+                <div className="p-4 border-t border-green-500">
+                  <div className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={userMessage}
+                      onChange={(e) => setUserMessage(e.target.value)}
+                      placeholder={chatMode === 'rag' ? 
+                        'QUERY DOCUMENT MATRIX...' : 
+                        'ENTER NEURAL COMMAND...'
+                      }
+                      onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                      className="matrix-input flex-1"
+                    />
+                    <button
+                      onClick={sendMessage}
+                      disabled={loading || !userMessage || (chatMode === 'rag' && !selectedDocument)}
+                      className="matrix-button"
+                    >
+                      {loading ? 'PROCESSING...' : 'EXECUTE'}
+                    </button>
+                    <button
+                      onClick={clearChat}
+                      className="matrix-button bg-red-900 border-red-500 text-red-400 hover:bg-red-800"
+                    >
+                      PURGE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
